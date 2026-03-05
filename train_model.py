@@ -1,32 +1,42 @@
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 import pickle
 
-# Sample dataset of emails
-data = {
-    "email": [
-        "Congratulations! You won a free iPhone",
-        "Click this link to verify your bank account",
-        "Meeting scheduled tomorrow at 10am",
-        "Project update attached",
-        "Urgent! Your account has been compromised"
-    ],
-    "label": [1, 1, 0, 0, 1]  # 1 = phishing, 0 = safe
-}
+# Load dataset
+df = pd.read_csv("phishing_email.csv")
 
-df = pd.DataFrame(data)
+# Drop missing values
+df = df.dropna()
 
-# Convert text to numbers
-vectorizer = TfidfVectorizer()
-X = vectorizer.fit_transform(df["email"])
+# Features and labels
+X = df["text_combined"]
 y = df["label"]
 
-# Train a simple model
-model = LogisticRegression()
-model.fit(X, y)
+# Split into training and testing
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
 
-# Save vectorizer and model to a file
+# Convert text to numerical features
+vectorizer = TfidfVectorizer(stop_words="english", max_df=0.7)
+
+X_train_vec = vectorizer.fit_transform(X_train)
+X_test_vec = vectorizer.transform(X_test)
+
+# Train model
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train_vec, y_train)
+
+# Evaluate model
+y_pred = model.predict(X_test_vec)
+accuracy = accuracy_score(y_test, y_pred)
+
+print("Model Accuracy:", accuracy)
+
+# Save model
 pickle.dump((vectorizer, model), open("model.pkl", "wb"))
 
 print("Model trained and saved successfully!")
