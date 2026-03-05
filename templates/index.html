@@ -1,23 +1,130 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Phishing Email Detector</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phishing Email Detector</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h2>Phishing Email Detector</h2>
-        <form method="POST" enctype="multipart/form-data">
-    <textarea name="email" rows="6" placeholder="Paste your email here..."></textarea><br>
-    <label style="display:block; margin:10px 0;">
-        OR upload .eml file:
-        <input type="file" name="email_file" accept=".eml">
-    </label>
-    <button type="submit">Check Email</button>
-</form>
-        {% if prediction %}
-            <div class="prediction">{{ prediction }}</div>
-        {% endif %}
+<header>
+    <div class="header-container">
+        <h1>Phishing Email Detector</h1>
+        <a href="https://github.com/dharmarimal/phishing-detector" target="_blank" class="github-link">GitHub Repo</a>
     </div>
+</header>
+
+<div class="container">
+    <p>Paste your email text or upload a <strong>.eml</strong> file to check for phishing.</p>
+
+    <!-- Dark Mode Toggle -->
+    <label class="switch">
+        <input type="checkbox" id="darkModeToggle">
+        <span class="slider round"></span> Dark Mode
+    </label>
+
+    <!-- Email Form -->
+    <form method="POST" enctype="multipart/form-data" id="emailForm">
+        <textarea name="email" placeholder="Paste email text here..." rows="8"></textarea>
+        <input type="file" name="email_file" accept=".eml">
+        <button type="submit">Check Email</button>
+    </form>
+
+    <!-- Latest Result -->
+    <div id="latestResult"></div>
+
+    <!-- Email Body Preview -->
+    <div class="email-body"></div>
+
+    <!-- Recent Predictions -->
+    <div class="recent">
+        <h3>Recent Predictions</h3>
+        <button onclick="downloadCSV()" class="copyBtn">Download CSV</button>
+        <button onclick="clearRecent()" class="copyBtn danger">Clear Recent</button>
+        <ul id="recentList"></ul>
+    </div>
+</div>
+
+<footer>
+    <p>Made by Dharma Rimal | <a href="https://github.com/dharmarimal" target="_blank">My GitHub</a></p>
+</footer>
+
+<script>
+const toggle = document.getElementById('darkModeToggle');
+toggle.addEventListener('change', () => {
+    document.body.classList.toggle('dark-mode');
+});
+
+function copyText(text) {
+    navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+}
+
+function downloadCSV() {
+    window.location.href = "/download_csv";
+}
+
+function clearRecent() {
+    if (!confirm("Are you sure you want to clear all recent predictions?")) return;
+    fetch("/clear_recent", { method: "POST" })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                alert("Recent predictions cleared!");
+                document.getElementById('recentList').innerHTML = '';
+            } else {
+                alert("Error clearing predictions: " + data.message);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Error clearing predictions.");
+        });
+}
+
+const form = document.getElementById('emailForm');
+const latestDiv = document.getElementById('latestResult');
+const emailBodyDiv = document.querySelector('.email-body');
+const recentList = document.getElementById('recentList');
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    try {
+        const res = await fetch("/predict", { method: "POST", body: formData });
+        const data = await res.json();
+        if (data.error) { alert(data.error); return; }
+
+        let color = data.confidence > 80 ? 'red' : data.confidence > 50 ? 'orange' : 'green';
+
+        latestDiv.className = data.prediction.includes('⚠️') ? 'result danger' : 'result safe';
+        latestDiv.innerHTML = `
+            ${data.sender ? `<p><strong>From:</strong> ${data.sender}</p>` : ''}
+            ${data.recipient ? `<p><strong>To:</strong> ${data.recipient}</p>` : ''}
+            ${data.subject ? `<p><strong>Subject:</strong> ${data.subject}</p>` : ''}
+            <p>${data.prediction}</p>
+            <div class="confidence-bar"><div class="fill" style="width:${data.confidence}%; background:${color}"></div></div>
+            <button class="copyBtn" onclick="copyText('From: ${data.sender}\\nTo: ${data.recipient}\\nSubject: ${data.subject}\\n${data.prediction}')">Copy</button>
+        `;
+
+        emailBodyDiv.innerHTML = `<h4>Email Body Preview:</h4><pre>${data.email_body}</pre>`;
+
+        recentList.innerHTML = '';
+        data.recent.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            const btn = document.createElement('button');
+            btn.textContent = 'Copy';
+            btn.className = 'copyBtn';
+            btn.onclick = () => copyText(item);
+            li.appendChild(btn);
+            recentList.appendChild(li);
+        });
+
+    } catch(err) {
+        console.error(err);
+        alert("Error predicting email.");
+    }
+});
+</script>
 </body>
 </html>
