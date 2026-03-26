@@ -1,130 +1,818 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Phishing Email Detector</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard AI</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg-main: #f8fafc;
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: rgba(148, 163, 184, 0.2);
+            --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        body.dark-mode {
+            --primary: #60a5fa;
+            --primary-dark: #3b82f6;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --bg-main: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.88);
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+            --border: rgba(148, 163, 184, 0.18);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 25%),
+                radial-gradient(circle at bottom right, rgba(22, 163, 74, 0.08), transparent 20%),
+                var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .navbar-custom {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .hero-section {
+            padding: 80px 0 50px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(37, 99, 235, 0.12);
+            color: var(--primary);
+            padding: 10px 16px;
+            border-radius: 999px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+        }
+
+        .hero-title {
+            font-size: clamp(2.2rem, 4vw, 4rem);
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 16px;
+        }
+
+        .hero-text {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 700px;
+            margin: 0 auto 28px;
+        }
+
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .btn-premium {
+            border-radius: 14px;
+            padding: 12px 20px;
+            font-weight: 600;
+            border: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary-premium {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-outline-premium {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .section-spacing {
+            padding: 22px 0 34px;
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+        }
+
+        .stats-card {
+            padding: 26px 22px;
+            height: 100%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stats-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 14px;
+        }
+
+        .stats-icon.primary {
+            background: rgba(37, 99, 235, 0.12);
+            color: var(--primary);
+        }
+
+        .stats-icon.danger {
+            background: rgba(220, 38, 38, 0.12);
+            color: var(--danger);
+        }
+
+        .stats-icon.success {
+            background: rgba(22, 163, 74, 0.12);
+            color: var(--success);
+        }
+
+        .stats-label {
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .stats-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .content-card {
+            padding: 28px;
+        }
+
+        .section-title {
+            font-size: 1.45rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 22px;
+        }
+
+        .form-control,
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.7);
+            color: #0f172a;
+            border: 1px solid rgba(148, 163, 184, 0.28);
+            border-radius: 14px;
+            box-shadow: none;
+            padding: 13px 15px;
+        }
+
+        body.dark-mode .form-control,
+        body.dark-mode .form-control:focus {
+            background: rgba(15, 23, 42, 0.55);
+            color: #f8fafc;
+            border: 1px solid rgba(148, 163, 184, 0.22);
+        }
+
+        .form-control::placeholder {
+            color: #94a3b8;
+        }
+
+        .upload-note {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        .result-box {
+            margin-top: 22px;
+            padding: 18px;
+            border-radius: 18px;
+            background: rgba(148, 163, 184, 0.08);
+            border: 1px solid var(--border);
+        }
+
+        .result-title {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .chart-wrap {
+            padding: 26px;
+            height: 100%;
+        }
+
+        .chart-box {
+            position: relative;
+            height: 300px;
+        }
+
+        .table-card {
+            padding: 24px;
+        }
+
+        .table thead th {
+            font-weight: 600;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            color: var(--text-main);
+            border-color: rgba(148, 163, 184, 0.14);
+        }
+
+        .badge-status {
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 999px;
+        }
+
+        .badge-phishing {
+            background: rgba(220, 38, 38, 0.12);
+            color: var(--danger);
+        }
+
+        .badge-safe {
+            background: rgba(22, 163, 74, 0.12);
+            color: var(--success);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 28px 0;
+        }
+
+        .toast-box {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            min-width: 240px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            color: white;
+            font-weight: 600;
+            display: none;
+            z-index: 99999;
+            box-shadow: 0 12px 25px rgba(15, 23, 42, 0.18);
+        }
+
+        .toast-success {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+        }
+
+        .toast-error {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+
+        .modal-custom {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(6px);
+            padding: 20px;
+        }
+
+        .modal-inner {
+            background: #ffffff;
+            color: #0f172a;
+            margin: 5vh auto;
+            width: min(720px, 100%);
+            border-radius: 24px;
+            padding: 24px;
+            position: relative;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 16px;
+            top: 10px;
+            background: transparent;
+            border: none;
+            font-size: 2rem;
+            line-height: 1;
+            cursor: pointer;
+            color: #334155;
+        }
+
+        .modal-inner video {
+            width: 100%;
+            max-height: 420px;
+            border-radius: 18px;
+            margin-top: 14px;
+            background: #000;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .modal-text {
+            color: #64748b;
+            margin-bottom: 0;
+        }
+
+        .footer-note {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 10px 0 30px;
+            font-size: 0.92rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding-top: 52px;
+            }
+
+            .content-card,
+            .table-card,
+            .chart-wrap {
+                padding: 20px;
+            }
+
+            .navbar-right {
+                gap: 8px !important;
+            }
+
+            .navbar-right .username-chip {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
-<header>
-    <div class="header-container">
-        <h1>Phishing Email Detector</h1>
-        <a href="https://github.com/dharmarimal/phishing-detector" target="_blank" class="github-link">GitHub Repo</a>
+
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container py-2">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-shield-lock-fill me-2"></i>PhishGuard AI
+            </a>
+
+            <div class="d-flex align-items-center gap-2 navbar-right">
+                <span class="badge rounded-pill text-bg-light username-chip px-3 py-2">
+                    <i class="bi bi-person-circle me-1"></i>{{ user }}
+                </span>
+
+                <button class="btn btn-outline-light btn-sm rounded-pill px-3" onclick="openTutorial()">
+                    <i class="bi bi-play-circle me-1"></i>Tutorial
+                </button>
+
+                <button class="btn btn-outline-light btn-sm rounded-pill px-3" onclick="toggleDarkMode()">
+                    <i class="bi bi-moon-stars me-1"></i>Theme
+                </button>
+
+                <a href="/user-logout" class="btn btn-danger btn-sm rounded-pill px-3">
+                    <i class="bi bi-box-arrow-right me-1"></i>Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section text-center">
+        <div class="container">
+            <div class="hero-badge mx-auto">
+                <i class="bi bi-stars"></i>
+                AI-powered email threat detection
+            </div>
+
+            <h1 class="hero-title">Protect your inbox with a cleaner, smarter phishing detector</h1>
+            <p class="hero-text">
+                Scan suspicious emails, review results instantly, and keep track of recent detections with a premium dashboard experience.
+            </p>
+
+            <div class="hero-actions">
+                <a href="#scan-section" class="btn btn-premium btn-primary-premium">
+                    <i class="bi bi-search me-2"></i>Start Scanning
+                </a>
+                <button class="btn btn-premium btn-outline-premium" onclick="openTutorial()">
+                    <i class="bi bi-play-btn me-2"></i>Watch Tutorial
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-spacing">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="glass-card stats-card">
+                        <div class="stats-icon primary">
+                            <i class="bi bi-envelope-check"></i>
+                        </div>
+                        <div class="stats-label">Total Emails</div>
+                        <p class="stats-value" id="total">0</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="glass-card stats-card">
+                        <div class="stats-icon danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                        <div class="stats-label">Phishing</div>
+                        <p class="stats-value" id="phishing">0</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="glass-card stats-card">
+                        <div class="stats-icon success">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <div class="stats-label">Safe</div>
+                        <p class="stats-value" id="safe">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="scan-section" class="section-spacing">
+        <div class="container">
+            <div class="row g-4 align-items-stretch">
+                <div class="col-lg-7">
+                    <div class="glass-card content-card h-100">
+                        <h2 class="section-title">Scan an email</h2>
+                        <p class="section-subtitle">Paste raw email content or upload an <code>.eml</code> file to check whether it looks phishing or safe.</p>
+
+                        <form id="predictForm">
+                            <div class="mb-3">
+                                <textarea
+                                    name="email"
+                                    id="emailText"
+                                    rows="8"
+                                    class="form-control"
+                                    placeholder="Paste email content here..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <input type="file" name="email_file" id="emailFile" class="form-control" accept=".eml">
+                                <div class="upload-note">Upload only if you want to scan an email file instead of pasted text.</div>
+                            </div>
+
+                            <button type="submit" class="btn btn-premium btn-primary-premium w-100">
+                                <i class="bi bi-lightning-charge me-2"></i>Scan Now
+                            </button>
+                        </form>
+
+                        <div class="result-box">
+                            <div class="result-title">Prediction Result</div>
+                            <p class="result-value" id="result">No scan yet</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="glass-card chart-wrap">
+                        <h2 class="section-title">Detection Overview</h2>
+                        <p class="section-subtitle">A quick visual summary of your recent scans.</p>
+                        <div class="chart-box">
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-spacing">
+        <div class="container">
+            <div class="glass-card table-card">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                    <div>
+                        <h2 class="section-title mb-1">Recent Predictions</h2>
+                        <p class="section-subtitle mb-0">Latest scanned emails shown in your dashboard.</p>
+                    </div>
+
+                    <button id="clearRecentBtn" class="btn btn-outline-danger rounded-pill px-4">
+                        <i class="bi bi-trash3 me-2"></i>Clear Recent
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Sender</th>
+                                <th>Recipient</th>
+                                <th>Subject</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentTable">
+                            <tr>
+                                <td colspan="4">
+                                    <div class="empty-state">No predictions yet</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="footer-note">
+        Built for safer email scanning with a cleaner user experience.
     </div>
-</header>
 
-<div class="container">
-    <p>Paste your email text or upload a <strong>.eml</strong> file to check for phishing.</p>
+    <div id="toast" class="toast-box"></div>
 
-    <!-- Dark Mode Toggle -->
-    <label class="switch">
-        <input type="checkbox" id="darkModeToggle">
-        <span class="slider round"></span> Dark Mode
-    </label>
+    <div id="tutorialModal" class="modal-custom">
+        <div class="modal-inner">
+            <button class="modal-close" onclick="closeTutorial()">&times;</button>
+            <h3 class="modal-title">Welcome to PhishGuard AI</h3>
+            <p class="modal-text">Watch this quick guide to understand how to scan emails and read the results.</p>
 
-    <!-- Email Form -->
-    <form method="POST" enctype="multipart/form-data" id="emailForm">
-        <textarea name="email" placeholder="Paste email text here..." rows="8"></textarea>
-        <input type="file" name="email_file" accept=".eml">
-        <button type="submit">Check Email</button>
-    </form>
+            <video id="tutorialVideo" controls>
+                <source src="{{ url_for('static', filename='tutorial.mp4') }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
 
-    <!-- Latest Result -->
-    <div id="latestResult"></div>
-
-    <!-- Email Body Preview -->
-    <div class="email-body"></div>
-
-    <!-- Recent Predictions -->
-    <div class="recent">
-        <h3>Recent Predictions</h3>
-        <button onclick="downloadCSV()" class="copyBtn">Download CSV</button>
-        <button onclick="clearRecent()" class="copyBtn danger">Clear Recent</button>
-        <ul id="recentList"></ul>
+            <div class="mt-4 text-end">
+                <button class="btn btn-premium btn-primary-premium" onclick="closeTutorial()">
+                    Got it
+                </button>
+            </div>
+        </div>
     </div>
-</div>
 
-<footer>
-    <p>Made by Dharma Rimal | <a href="https://github.com/dharmarimal" target="_blank">My GitHub</a></p>
-</footer>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function showToast(message, type = "success") {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.className = "toast-box " + (type === "error" ? "toast-error" : "toast-success");
+            toast.style.display = "block";
 
-<script>
-const toggle = document.getElementById('darkModeToggle');
-toggle.addEventListener('change', () => {
-    document.body.classList.toggle('dark-mode');
-});
+            setTimeout(() => {
+                toast.style.display = "none";
+            }, 3000);
+        }
 
-function copyText(text) {
-    navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
-}
+        function openTutorial() {
+            document.getElementById("tutorialModal").style.display = "block";
+        }
 
-function downloadCSV() {
-    window.location.href = "/download_csv";
-}
+        function closeTutorial() {
+            const modal = document.getElementById("tutorialModal");
+            const video = document.getElementById("tutorialVideo");
 
-function clearRecent() {
-    if (!confirm("Are you sure you want to clear all recent predictions?")) return;
-    fetch("/clear_recent", { method: "POST" })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === "success") {
-                alert("Recent predictions cleared!");
-                document.getElementById('recentList').innerHTML = '';
-            } else {
-                alert("Error clearing predictions: " + data.message);
+            if (video) {
+                video.pause();
+                video.currentTime = 0;
             }
-        })
-        .catch(err => {
-            console.error(err);
-            alert("Error clearing predictions.");
-        });
-}
 
-const form = document.getElementById('emailForm');
-const latestDiv = document.getElementById('latestResult');
-const emailBodyDiv = document.querySelector('.email-body');
-const recentList = document.getElementById('recentList');
+            modal.style.display = "none";
+            localStorage.setItem("seenTutorial", "true");
+        }
 
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(form);
-    try {
-        const res = await fetch("/predict", { method: "POST", body: formData });
-        const data = await res.json();
-        if (data.error) { alert(data.error); return; }
+        window.addEventListener("click", function (event) {
+            const modal = document.getElementById("tutorialModal");
+            const video = document.getElementById("tutorialVideo");
 
-        let color = data.confidence > 80 ? 'red' : data.confidence > 50 ? 'orange' : 'green';
-
-        latestDiv.className = data.prediction.includes('⚠️') ? 'result danger' : 'result safe';
-        latestDiv.innerHTML = `
-            ${data.sender ? `<p><strong>From:</strong> ${data.sender}</p>` : ''}
-            ${data.recipient ? `<p><strong>To:</strong> ${data.recipient}</p>` : ''}
-            ${data.subject ? `<p><strong>Subject:</strong> ${data.subject}</p>` : ''}
-            <p>${data.prediction}</p>
-            <div class="confidence-bar"><div class="fill" style="width:${data.confidence}%; background:${color}"></div></div>
-            <button class="copyBtn" onclick="copyText('From: ${data.sender}\\nTo: ${data.recipient}\\nSubject: ${data.subject}\\n${data.prediction}')">Copy</button>
-        `;
-
-        emailBodyDiv.innerHTML = `<h4>Email Body Preview:</h4><pre>${data.email_body}</pre>`;
-
-        recentList.innerHTML = '';
-        data.recent.forEach(item => {
-            const li = document.createElement('li');
-            li.textContent = item;
-            const btn = document.createElement('button');
-            btn.textContent = 'Copy';
-            btn.className = 'copyBtn';
-            btn.onclick = () => copyText(item);
-            li.appendChild(btn);
-            recentList.appendChild(li);
+            if (event.target === modal) {
+                if (video) {
+                    video.pause();
+                    video.currentTime = 0;
+                }
+                modal.style.display = "none";
+            }
         });
 
-    } catch(err) {
-        console.error(err);
-        alert("Error predicting email.");
-    }
-});
-</script>
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            const isDark = document.body.classList.contains("dark-mode");
+            localStorage.setItem("darkMode", isDark ? "enabled" : "disabled");
+        }
+
+        if (localStorage.getItem("darkMode") === "enabled") {
+            document.body.classList.add("dark-mode");
+        }
+
+        window.addEventListener("load", function () {
+            if (!localStorage.getItem("seenTutorial")) {
+                openTutorial();
+            }
+        });
+
+        const ctx = document.getElementById("pieChart").getContext("2d");
+        const pieChart = new Chart(ctx, {
+            type: "doughnut",
+            data: {
+                labels: ["Phishing", "Safe"],
+                datasets: [{
+                    data: [0, 0],
+                    backgroundColor: ["#dc2626", "#16a34a"],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: "68%",
+                plugins: {
+                    legend: {
+                        position: "bottom"
+                    }
+                }
+            }
+        });
+
+        function countUp(element, target) {
+            let current = parseInt(element.textContent) || 0;
+            const steps = 25;
+            const increment = (target - current) / steps;
+            let count = 0;
+
+            const timer = setInterval(() => {
+                count++;
+                current += increment;
+                element.textContent = Math.round(current);
+
+                if (count >= steps) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                }
+            }, 18);
+        }
+
+        function updateDashboard(recent) {
+            let phishing = 0;
+            let safe = 0;
+
+            if (recent && recent.length > 0) {
+                recent.forEach(item => {
+                    if (item.includes("Phishing")) {
+                        phishing++;
+                    } else {
+                        safe++;
+                    }
+                });
+            }
+
+            const total = phishing + safe;
+
+            countUp(document.getElementById("total"), total);
+            countUp(document.getElementById("phishing"), phishing);
+            countUp(document.getElementById("safe"), safe);
+
+            pieChart.data.datasets[0].data = [phishing, safe];
+            pieChart.update();
+        }
+
+        function updateRecentTable(recent) {
+            const tbody = document.getElementById("recentTable");
+            tbody.innerHTML = "";
+
+            if (!recent || recent.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4">
+                            <div class="empty-state">No predictions yet</div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            recent.forEach(item => {
+                const parts = item.split("|");
+                const sender = (parts[0] || "").replace("From: ", "").trim();
+                const recipient = (parts[1] || "").replace("To: ", "").trim();
+                const subject = (parts[2] || "").replace("Subject: ", "").trim();
+                const prediction = (parts[3] || "").trim();
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${sender || "-"}</td>
+                    <td>${recipient || "-"}</td>
+                    <td>${subject || "-"}</td>
+                    <td>
+                        <span class="badge-status ${prediction === "Phishing" ? "badge-phishing" : "badge-safe"}">
+                            ${prediction || "-"}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        document.getElementById("predictForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const resultBox = document.getElementById("result");
+            resultBox.textContent = "Scanning...";
+
+            fetch("/predict", {
+                method: "POST",
+                body: formData
+            })
+            .then(async res => {
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || "Prediction failed");
+                }
+                return data;
+            })
+            .then(data => {
+                const resultText = `${data.prediction} (${data.confidence}% confidence)`;
+                resultBox.textContent = resultText;
+                resultBox.style.color = data.prediction === "Phishing" ? "#dc2626" : "#16a34a";
+
+                updateRecentTable(data.recent);
+                updateDashboard(data.recent);
+                showToast("Prediction completed");
+            })
+            .catch(error => {
+                resultBox.textContent = "No scan yet";
+                resultBox.style.color = "";
+                showToast(error.message || "Error predicting", "error");
+            });
+        });
+
+        document.getElementById("clearRecentBtn").addEventListener("click", function () {
+            fetch("/clear_recent", {
+                method: "POST"
+            })
+            .then(async res => {
+                const data = await res.json();
+                if (!res.ok || data.status !== "success") {
+                    throw new Error(data.message || "Failed to clear recent predictions");
+                }
+                return data;
+            })
+            .then(() => {
+                updateRecentTable([]);
+                updateDashboard([]);
+                document.getElementById("result").textContent = "No scan yet";
+                document.getElementById("result").style.color = "";
+                showToast("Recent predictions cleared");
+            })
+            .catch(error => {
+                showToast(error.message || "Error clearing predictions", "error");
+            });
+        });
+    </script>
 </body>
 </html>

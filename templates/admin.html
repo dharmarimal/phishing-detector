@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #121212;
+  color: #f0f0f0;
+}
+header {
+  text-align: center;
+  padding: 30px;
+  font-size: 2rem;
+  color: #4caf50;
+}
+.container { max-width: 1200px; margin: auto; padding: 20px; }
+.cards { display: flex; justify-content: space-around; margin-bottom: 30px; }
+.card {
+  background: #1f1f1f;
+  padding: 20px;
+  border-radius: 12px;
+  width: 30%;
+  text-align: center;
+  transition: transform 0.3s;
+}
+.card:hover { transform: translateY(-5px); }
+table { width: 100%; border-collapse: collapse; background: #1f1f1f; border-radius: 8px; overflow: hidden; }
+th, td { padding: 12px; text-align: left; }
+tr:nth-child(even) { background: #2a2a2a; }
+tr:hover { background: #333; }
+button {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+button:hover { background: #45a049; }
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #4caf50;
+  padding: 12px 20px;
+  border-radius: 8px;
+  color: #fff;
+  display: none;
+  z-index: 9999;
+}
+.toast.error { background: #ff4d4d; }
+</style>
+</head>
+<body>
+<header>Admin Dashboard</header>
+<div class="container">
+  <div class="cards">
+    <div class="card"><h3>Total Emails</h3><p id="total">{{ rows|length }}</p></div>
+    <div class="card"><h3>Phishing</h3><p id="phishing">{{ phishing }}</p></div>
+    <div class="card"><h3>Safe</h3><p id="safe">{{ safe }}</p></div>
+  </div>
+
+  <canvas id="pieChart" style="max-width:400px;margin:auto;"></canvas>
+
+  <div style="margin-top:20px;">
+    <button onclick="downloadCSV()">Download CSV</button>
+    <button onclick="clearRecent()">Clear Recent</button>
+  </div>
+
+  <h3 style="margin-top:30px;">Recent Predictions</h3>
+  <table>
+    <thead>
+      <tr><th>Sender</th><th>Recipient</th><th>Subject</th><th>Prediction</th></tr>
+    </thead>
+    <tbody id="recentTable">
+      {% if rows %}
+        {% for row in rows %}
+          <tr class="animate__animated animate__fadeIn">
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}</td>
+            <td style="color: {% if row[4]=='Phishing' %}#ff4d4d{% else %}#4caf50{% endif %};">{{ row[4] }}</td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="4" style="text-align:center;color:#ccc;">No recent predictions</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ctx = document.getElementById('pieChart').getContext('2d');
+const pieChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Phishing', 'Safe'],
+        datasets: [{ data: [{{ phishing }}, {{ safe }}], backgroundColor: ['#ff4d4d','#4caf50'] }]
+    }
+});
+
+function showToast(message, type="success") {
+    const toast = document.getElementById("toast");
+    toast.className = "toast" + (type==="error" ? " error" : "");
+    toast.innerText = message;
+    toast.style.display = "block";
+    setTimeout(()=>{ toast.style.display = "none"; }, 3000);
+}
+
+// Update dashboard from /admin_data
+function updateDashboard() {
+    fetch("/admin_data")
+    .then(res=>res.json())
+    .then(data=>{
+        pieChart.data.datasets[0].data = [data.phishing, data.safe];
+        pieChart.update();
+        document.getElementById('phishing').innerText = data.phishing;
+        document.getElementById('safe').innerText = data.safe;
+        document.getElementById('total').innerText = data.phishing + data.safe;
+        updateTable(data.rows);
+    });
+}
+
+// Update table rows with animation
+function updateTable(newRows) {
+    const tableBody = document.getElementById("recentTable");
+    tableBody.innerHTML = "";
+
+    if (!newRows || newRows.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="4" style="text-align:center;color:#ccc;">No recent predictions</td>`;
+        tableBody.appendChild(tr);
+        return;
+    }
+
+    newRows.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.className = "animate__animated animate__slideInDown";
+        tr.innerHTML = `
+            <td>${r.sender}</td>
+            <td>${r.recipient}</td>
+            <td>${r.subject}</td>
+            <td style="color:${r.prediction=='Phishing' ? '#ff4d4d':'#4caf50'}">${r.prediction}</td>
+        `;
+        tableBody.appendChild(tr);
+    });
+}
+
+setInterval(updateDashboard, 5000);
+
+function clearRecent() {
+    fetch("/clear_recent",{method:"POST"})
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.status==='success'){
+            showToast("Recent predictions cleared");
+            updateDashboard();
+        } else showToast(data.message,"error");
+    });
+}
+
+function downloadCSV() { window.location = "/download_csv"; }
+</script>
+</body>
+</html>
