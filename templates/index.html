@@ -66,6 +66,58 @@
             letter-spacing: 0.3px;
         }
 
+        .profile-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 10px 6px 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .profile-chip img {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .profile-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            line-height: 1;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 11px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: capitalize;
+        }
+
+        .status-approved {
+            background: rgba(22, 163, 74, 0.14);
+            color: #16a34a;
+        }
+
+        .status-pending {
+            background: rgba(217, 119, 6, 0.16);
+            color: #d97706;
+        }
+
+        .status-rejected {
+            background: rgba(220, 38, 38, 0.14);
+            color: #dc2626;
+        }
+
         .hero-section {
             padding: 80px 0 50px;
         }
@@ -372,10 +424,144 @@
         }
 
         .footer-note {
-            text-align: center;
+            padding: 24px 0 40px;
+        }
+
+        .footer-shell {
+            position: relative;
+            overflow: hidden;
+            background:
+                linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(241, 245, 249, 0.88));
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 28px;
+            padding: 26px 28px;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+        }
+
+        .footer-shell::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto auto 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), #0ea5e9, var(--success));
+        }
+
+        .footer-wrap {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .footer-badge {
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(22, 163, 74, 0.12));
+            color: var(--primary);
+            font-size: 1.2rem;
+            border: 1px solid rgba(37, 99, 235, 0.12);
+        }
+
+        .footer-kicker {
+            display: block;
+            color: var(--primary);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .footer-title {
+            margin: 0 0 4px;
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .footer-copy {
             color: var(--text-muted);
-            padding: 10px 0 30px;
             font-size: 0.92rem;
+            margin: 0;
+        }
+
+        .footer-social {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            min-width: 124px;
+            height: 48px;
+            padding: 0 16px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            text-decoration: none;
+            color: var(--text-main);
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            background: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+            transition: transform 0.22s ease, color 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+        }
+
+        .social-link:hover {
+            transform: translateY(-3px);
+            color: var(--primary);
+            border-color: rgba(37, 99, 235, 0.35);
+            box-shadow: 0 14px 28px rgba(37, 99, 235, 0.12);
+        }
+
+        .social-link i {
+            font-size: 1rem;
+        }
+
+        body.dark-mode .footer-shell {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.9));
+            border-color: rgba(148, 163, 184, 0.16);
+            box-shadow: 0 22px 48px rgba(0, 0, 0, 0.28);
+        }
+
+        body.dark-mode .social-link {
+            background: rgba(15, 23, 42, 0.5);
+            border-color: rgba(148, 163, 184, 0.16);
+        }
+
+        #reasonList li {
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .highlight-danger {
+            background-color: rgba(220, 38, 38, 0.2);
+            color: #dc2626;
+            font-weight: 600;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .highlight-safe {
+            background-color: rgba(22, 163, 74, 0.2);
+            color: #16a34a;
+            font-weight: 600;
+            padding: 2px 4px;
+            border-radius: 4px;
         }
 
         @media (max-width: 768px) {
@@ -396,6 +582,22 @@
             .navbar-right .username-chip {
                 display: none;
             }
+
+            .footer-shell {
+                padding: 22px 20px;
+            }
+
+            .footer-brand {
+                align-items: flex-start;
+            }
+
+            .footer-social {
+                width: 100%;
+            }
+
+            .social-link {
+                flex: 1 1 140px;
+            }
         }
     </style>
 </head>
@@ -408,9 +610,22 @@
             </a>
 
             <div class="d-flex align-items-center gap-2 navbar-right">
-                <span class="badge rounded-pill text-bg-light username-chip px-3 py-2">
-                    <i class="bi bi-person-circle me-1"></i>{{ user }}
+                <a href="{{ url_for('profile') }}" class="profile-chip username-chip">
+                    <img src="{{ profile_image_url }}" alt="Profile photo">
+                    <span class="profile-name">{{ user }}</span>
+                </a>
+
+                <span class="status-pill status-{{ user_status }}">
+                    <i class="bi bi-check-circle"></i>{{ user_status }}
                 </span>
+
+                <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                    <i class="bi bi-chat-dots me-1"></i>Contact Us
+                </a>
+
+                <a href="{{ url_for('profile') }}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                    <i class="bi bi-person-gear me-1"></i>Profile
+                </a>
 
                 <button class="btn btn-outline-light btn-sm rounded-pill px-3" onclick="openTutorial()">
                     <i class="bi bi-play-circle me-1"></i>Tutorial
@@ -517,6 +732,20 @@
                         <div class="result-box">
                             <div class="result-title">Prediction Result</div>
                             <p class="result-value" id="result">No scan yet</p>
+
+                            <div class="progress mt-3" style="height: 10px;">
+                                <div id="confidenceBar" class="progress-bar bg-danger" style="width: 0%"></div>
+                            </div>
+
+                            <div class="mt-3">
+                                <div class="result-title">Why this result?</div>
+                                <ul id="reasonList" class="mb-0 ps-3"></ul>
+                            </div>
+
+                            <div class="mt-3">
+                                <div class="result-title">Highlighted Analysis</div>
+                                <div id="highlightedText" style="padding:10px; border-radius:10px; background:rgba(0,0,0,0.05);"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -524,7 +753,7 @@
                 <div class="col-lg-5">
                     <div class="glass-card chart-wrap">
                         <h2 class="section-title">Detection Overview</h2>
-                        <p class="section-subtitle">A quick visual summary of your recent scans.</p>
+                        <p class="section-subtitle">Visual confidence split for the current scan result.</p>
                         <div class="chart-box">
                             <canvas id="pieChart"></canvas>
                         </div>
@@ -571,9 +800,42 @@
         </div>
     </section>
 
-    <div class="footer-note">
-        Built for safer email scanning with a cleaner user experience.
-    </div>
+    <footer class="footer-note">
+        <div class="container">
+            <div class="footer-shell">
+                <div class="footer-wrap">
+                    <div class="footer-brand">
+                        <div class="footer-badge">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <div>
+                            <span class="footer-kicker">Trusted Protection</span>
+                            <p class="footer-title">PhishGuard AI</p>
+                            <p class="footer-copy">&copy; 2026 PhishGuard AI. All rights reserved.</p>
+                        </div>
+                    </div>
+                    <div class="footer-social">
+                        <a class="social-link" href="{{ url_for('contact') }}" aria-label="Contact us">
+                            <i class="bi bi-envelope-paper-fill"></i>
+                            <span>Contact</span>
+                        </a>
+                        <a class="social-link" href="https://github.com/" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                            <i class="bi bi-github"></i>
+                            <span>GitHub</span>
+                        </a>
+                        <a class="social-link" href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                            <i class="bi bi-linkedin"></i>
+                            <span>LinkedIn</span>
+                        </a>
+                        <a class="social-link" href="https://x.com/" target="_blank" rel="noopener noreferrer" aria-label="X">
+                            <i class="bi bi-twitter-x"></i>
+                            <span>X</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <div id="toast" class="toast-box"></div>
 
@@ -598,6 +860,34 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        const centerTextPlugin = {
+            id: "centerText",
+            beforeDraw(chart) {
+                const { width, height, ctx } = chart;
+
+                const centerText = chart.config.options.plugins.centerText?.text || "0%";
+                const subText = chart.config.options.plugins.centerText?.subText || "No Scan";
+
+                ctx.save();
+
+                const mainFontSize = Math.max(22, height / 10);
+                const subFontSize = Math.max(12, height / 26);
+
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+
+                ctx.fillStyle = document.body.classList.contains("dark-mode") ? "#f8fafc" : "#0f172a";
+                ctx.font = `700 ${mainFontSize}px Poppins`;
+                ctx.fillText(centerText, width / 2, height / 2 - 10);
+
+                ctx.fillStyle = document.body.classList.contains("dark-mode") ? "#cbd5e1" : "#64748b";
+                ctx.font = `500 ${subFontSize}px Poppins`;
+                ctx.fillText(subText, width / 2, height / 2 + 22);
+
+                ctx.restore();
+            }
+        };
+
         function showToast(message, type = "success") {
             const toast = document.getElementById("toast");
             toast.textContent = message;
@@ -643,6 +933,7 @@
             document.body.classList.toggle("dark-mode");
             const isDark = document.body.classList.contains("dark-mode");
             localStorage.setItem("darkMode", isDark ? "enabled" : "disabled");
+            pieChart.update();
         }
 
         if (localStorage.getItem("darkMode") === "enabled") {
@@ -661,22 +952,33 @@
             data: {
                 labels: ["Phishing", "Safe"],
                 datasets: [{
-                    data: [0, 0],
+                    data: [0, 100],
                     backgroundColor: ["#dc2626", "#16a34a"],
-                    borderWidth: 0
+                    borderWidth: 0,
+                    hoverOffset: 8
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 cutout: "68%",
+                animation: {
+                    duration: 1000,
+                    easing: "easeOutQuart"
+                },
                 plugins: {
                     legend: {
                         position: "bottom"
+                    },
+                    centerText: {
+                        text: "0%",
+                        subText: "No Scan"
                     }
                 }
-            }
+            },
+            plugins: [centerTextPlugin]
         });
+        const initialRecentPredictions = {{ recent_predictions | tojson }};
 
         function countUp(element, target) {
             let current = parseInt(element.textContent) || 0;
@@ -694,6 +996,31 @@
                     clearInterval(timer);
                 }
             }, 18);
+        }
+
+        function animateCenterText(targetValue, label) {
+            let current = 0;
+            const steps = 30;
+            const increment = targetValue / steps;
+            let count = 0;
+
+            const timer = setInterval(() => {
+                count++;
+                current += increment;
+
+                if (current > targetValue) current = targetValue;
+
+                pieChart.options.plugins.centerText.text = `${Math.round(current)}%`;
+                pieChart.options.plugins.centerText.subText = label;
+                pieChart.update();
+
+                if (count >= steps) {
+                    pieChart.options.plugins.centerText.text = `${Math.round(targetValue)}%`;
+                    pieChart.options.plugins.centerText.subText = label;
+                    pieChart.update();
+                    clearInterval(timer);
+                }
+            }, 20);
         }
 
         function updateDashboard(recent) {
@@ -715,8 +1042,23 @@
             countUp(document.getElementById("total"), total);
             countUp(document.getElementById("phishing"), phishing);
             countUp(document.getElementById("safe"), safe);
+        }
 
-            pieChart.data.datasets[0].data = [phishing, safe];
+        function updatePieChart(prediction, confidence) {
+            if (prediction === "Phishing") {
+                pieChart.data.datasets[0].data = [100, 0];
+            } else {
+                pieChart.data.datasets[0].data = [0, 100];
+            }
+            pieChart.update();
+
+            animateCenterText(confidence, prediction);
+        }
+
+        function resetPieChart() {
+            pieChart.data.datasets[0].data = [0, 100];
+            pieChart.options.plugins.centerText.text = "0%";
+            pieChart.options.plugins.centerText.subText = "No Scan";
             pieChart.update();
         }
 
@@ -757,6 +1099,43 @@
             });
         }
 
+        function buildHighlightedText(emailContent) {
+            let highlighted = emailContent || "";
+
+            const dangerWords = [
+                "urgent", "verify", "password", "bank", "account",
+                "click", "login", "suspended", "otp", "confirm",
+                "http", "www", ".com"
+            ];
+
+            const safeWords = [
+                "meeting", "schedule", "report", "class", "assignment"
+            ];
+
+            const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
+            highlighted = highlighted.replace(urlRegex, (url) => {
+                return `<span class="highlight-danger">${url}</span>`;
+            });
+
+            dangerWords.forEach(word => {
+                const regex = new RegExp(`\\b(${word.replace(".", "\\.")})\\b`, "gi");
+                highlighted = highlighted.replace(regex, `<span class="highlight-danger">$1</span>`);
+            });
+
+            safeWords.forEach(word => {
+                const regex = new RegExp(`\\b(${word})\\b`, "gi");
+                highlighted = highlighted.replace(regex, `<span class="highlight-safe">$1</span>`);
+            });
+
+            return highlighted || "No email content to display";
+        }
+
+        function resetAnalysisUI() {
+            document.getElementById("reasonList").innerHTML = "";
+            document.getElementById("highlightedText").innerHTML = "";
+            document.getElementById("confidenceBar").style.width = "0%";
+        }
+
         document.getElementById("predictForm").addEventListener("submit", function (e) {
             e.preventDefault();
 
@@ -780,19 +1159,57 @@
                 resultBox.textContent = resultText;
                 resultBox.style.color = data.prediction === "Phishing" ? "#dc2626" : "#16a34a";
 
+                const bar = document.getElementById("confidenceBar");
+                bar.style.width = data.confidence + "%";
+                bar.className = data.prediction === "Phishing"
+                    ? "progress-bar bg-danger"
+                    : "progress-bar bg-success";
+
+                const reasonList = document.getElementById("reasonList");
+                reasonList.innerHTML = "";
+                if (data.reasons && data.reasons.length > 0) {
+                    data.reasons.forEach(reason => {
+                        const li = document.createElement("li");
+                        li.textContent = reason;
+                        reasonList.appendChild(li);
+                    });
+                }
+
+                const highlightedBox = document.getElementById("highlightedText");
+                const emailContent = data.email_body || document.getElementById("emailText").value || "";
+                highlightedBox.innerHTML = buildHighlightedText(emailContent);
+
                 updateRecentTable(data.recent);
                 updateDashboard(data.recent);
+                updatePieChart(data.prediction, data.confidence);
+
+                // Clear only the uploaded file after successful scan
+                document.getElementById("emailFile").value = "";
+
                 showToast("Prediction completed");
             })
             .catch(error => {
                 resultBox.textContent = "No scan yet";
                 resultBox.style.color = "";
+                resetAnalysisUI();
                 showToast(error.message || "Error predicting", "error");
             });
         });
 
+        document.getElementById("emailText").addEventListener("input", function () {
+            if (this.value.trim() !== "") {
+                document.getElementById("emailFile").value = "";
+            }
+        });
+
+        document.getElementById("emailFile").addEventListener("change", function () {
+            if (this.files.length > 0) {
+                document.getElementById("emailText").value = "";
+            }
+        });
+
         document.getElementById("clearRecentBtn").addEventListener("click", function () {
-            fetch("/clear_recent", {
+            fetch("/user_clear_recent", {
                 method: "POST"
             })
             .then(async res => {
@@ -805,14 +1222,19 @@
             .then(() => {
                 updateRecentTable([]);
                 updateDashboard([]);
+                resetPieChart();
                 document.getElementById("result").textContent = "No scan yet";
                 document.getElementById("result").style.color = "";
+                resetAnalysisUI();
                 showToast("Recent predictions cleared");
             })
             .catch(error => {
                 showToast(error.message || "Error clearing predictions", "error");
             });
         });
+
+        updateRecentTable(initialRecentPredictions);
+        updateDashboard(initialRecentPredictions);
     </script>
 </body>
 </html>

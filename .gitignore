@@ -1,4 +1,9 @@
+__pycache__/
+.venv/
+*.pyc
+*.db
+history.db
+recent.db
 phishing_email.csv
-phishing_email.csv
-phishing_email.csv
-phishing_email.csv
+.DS_Store
+outputs/
